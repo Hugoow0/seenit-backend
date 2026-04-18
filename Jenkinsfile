@@ -7,14 +7,26 @@ pipeline {
     }
 
     stages {
+        stage('Check Branch') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME != 'main' && env.GIT_BRANCH != 'origin/main') {
+                        echo "Not on main branch. Skipping deployment."
+                    }
+                }
+            }
+        }
+
 
         stage('Install') {
+            when { branch 'main' }
             steps {
                 sh 'npm ci --include=dev'
             }
         }
 
         stage('Build & Prepare') {
+            when { branch 'main' }
             steps {
                 sh '''
                 npm run build
@@ -26,6 +38,7 @@ pipeline {
         }
 
         stage('Deploy') {
+            when { branch 'main' }
             steps {
                 withCredentials([string(credentialsId: 'tmdb-api-key', variable: 'TMDB_API_KEY')]) {
                     sshagent(['backend-ssh-key']) {
