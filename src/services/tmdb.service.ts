@@ -150,6 +150,26 @@ const SearchTVShowResponseSchema = z.object({
     total_results: z.number(),
 });
 
+const MovieListResponseSchema = z.object({
+    results: z.array(SearchMovieSchema),
+    page: z.number(),
+    total_pages: z.number(),
+    total_results: z.number(),
+    dates: z
+        .object({
+            maximum: z.string(),
+            minimum: z.string(),
+        })
+        .optional(),
+});
+
+const TVShowListResponseSchema = z.object({
+    results: z.array(SearchTVShowSchema),
+    page: z.number(),
+    total_pages: z.number(),
+    total_results: z.number(),
+});
+
 // ----- Trending Schema -----
 const TrendingMovieSchema = z.object({
     id: z.number(),
@@ -183,6 +203,8 @@ export type TVShowDetails = z.infer<typeof TVShowDetailsSchema>;
 export type TVShowSeasonDetails = z.infer<typeof TVShowSeasonDetailsSchema>;
 export type SearchMovieResponse = z.infer<typeof SearchMovieResponseSchema>;
 export type SearchTVShowResponse = z.infer<typeof SearchTVShowResponseSchema>;
+export type MovieListResponse = z.infer<typeof MovieListResponseSchema>;
+export type TVShowListResponse = z.infer<typeof TVShowListResponseSchema>;
 export type TrendingResponse = z.infer<typeof TrendingResponseSchema>;
 
 // Custom Error
@@ -249,6 +271,20 @@ export async function getMovieCreditsById(
     return fetchTMDB(url, MovieCreditsSchema);
 }
 
+export async function getNowPlayingMovies(
+    page: number = 1,
+): Promise<TMDBResponse<MovieListResponse>> {
+    const url = `https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=${page}`;
+    return fetchTMDB(url, MovieListResponseSchema);
+}
+
+export async function getTopRatedMovies(
+    page: number = 1,
+): Promise<TMDBResponse<MovieListResponse>> {
+    const url = `https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=${page}`;
+    return fetchTMDB(url, MovieListResponseSchema);
+}
+
 export async function getTrendingMovies(): Promise<
     TMDBResponse<TrendingResponse>
 > {
@@ -278,6 +314,20 @@ export async function getTvShowSeasonDetailsById(
 ): Promise<TMDBResponse<TVShowSeasonDetails>> {
     const url = `https://api.themoviedb.org/3/tv/${tvShowId}/season/${seasonNumber}?language=en-US`;
     return fetchTMDB(url, TVShowSeasonDetailsSchema);
+}
+
+export async function getTopRatedTVShows(
+    page: number = 1,
+): Promise<TMDBResponse<TVShowListResponse>> {
+    const url = `https://api.themoviedb.org/3/tv/top_rated?language=en-US&page=${page}`;
+    return fetchTMDB(url, TVShowListResponseSchema);
+}
+
+export async function getPopularTVShows(
+    page: number = 1,
+): Promise<TMDBResponse<TVShowListResponse>> {
+    const url = `https://api.themoviedb.org/3/tv/popular?language=en-US&page=${page}`;
+    return fetchTMDB(url, TVShowListResponseSchema);
 }
 
 // Search Service Functions

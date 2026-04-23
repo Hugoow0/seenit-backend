@@ -1,8 +1,13 @@
 import { Router } from "express";
-import { getTvShowById } from "../controllers/tvshows.controller";
+import {
+    getTvShowById,
+    getTopRated,
+    getPopular,
+} from "../controllers/tvshows.controller";
 
 const router = Router();
-
-router.get("/:tvshowId", getTvShowById);
+router.get("/details/:tvshowId", getTvShowById);
+router.get("/top_rated", getTopRated);
+router.get("/popular", getPopular);
 
 export default router;
